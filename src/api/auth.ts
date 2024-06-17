@@ -13,12 +13,6 @@ export interface UserResponse {
     email: string
 }
 
-export interface UserListResponse {
-    id: number;
-    name: string;
-    email: string;
-    request_status: string;
-}
 
 export const login = async (email: string, password: string): Promise<void> => {
     try {
@@ -55,14 +49,7 @@ export const signup = async (username: string, email: string, password: string):
     }
 }
 
-export const getAllUsers = async (page: number, pageSize: number): Promise<{ data: UserListResponse[], pagination: any }> => {
-    try {
-        const response = await api.get<{ data: UserListResponse[], pagination: any }>(`/user/allUsers?page=${page}&pageSize=${pageSize}`);
-        return response.data;
-    } catch (error) {
-        throw new Error('Failed to fetch all users');
-    }
-};
+
 export const getUser = async (): Promise<UserResponse> => {
     try {
         const response = await api.get<UserResponse>('/user/info');

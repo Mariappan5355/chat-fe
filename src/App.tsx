@@ -8,6 +8,8 @@ import Signup from './components/Signup';
 import Inbox from './components/Inbox';
 import Friends from './components/Friends';
 import AllUsers from './components/AllUsers';
+import MessagingPage from './components/MessagingPage';
+
 
 const App: React.FC = () => {
   return (
@@ -19,6 +21,7 @@ const App: React.FC = () => {
         <Route path="/dashboard" element={<Dashboard />}>
         <Route path="" element={<Navigate to="inbox" replace />} />
           <Route path="inbox" element={<Inbox />} />
+          <Route path="message/:userId" element={<MessagingPage />} />
           <Route path="friends" element={<Friends />} />
           <Route path="all-users" element={<AllUsers />} />
         </Route>

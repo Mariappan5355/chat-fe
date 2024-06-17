@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
-import { getAllUsers, UserListResponse } from '../api/auth';
+import { getAllUsers, sendFriendRequest, updateFriendRequest, UserListResponse } from '../api/users';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 interface Pagination {
   total: number;
@@ -12,6 +15,7 @@ interface Pagination {
 const AllUsers: React.FC = () => {
   const [users, setUsers] = useState<UserListResponse[]>([]);
   const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, pageSize: 10, totalPages: 0 });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +28,7 @@ const AllUsers: React.FC = () => {
       }
     };
 
-    fetchData(); // Initial fetch
+    fetchData(); 
 
     return () => { };
   }, [pagination.page, pagination.pageSize]);
@@ -43,8 +47,51 @@ const AllUsers: React.FC = () => {
     }));
   };
 
+  const handleSendRequest = async (receiverId: number) => {
+    try {
+      await sendFriendRequest(receiverId);
+      const { data, pagination: fetchedPagination } = await getAllUsers(pagination.page, pagination.pageSize);
+      setUsers(data);
+      setPagination(fetchedPagination);
+    } catch (error) {
+      toast.error('Error sending friend request');
+      console.error('Error sending friend request:', error);
+    }
+  };
+
+  const handleApproveRequest = async (requesterId: number) => {
+    try {
+      await updateFriendRequest(requesterId, 'accepted');
+      setUsers(prevUsers => prevUsers.map(user =>
+        user.id === requesterId ? { ...user, request_status: 'accepted' } : user
+      ));
+      toast.success('Request status updated');
+    } catch (error) {
+      toast.error('Error approving friend request');
+      console.error('Error approving friend request:', error);
+    }
+  };
+
+  const handleRejectRequest = async (requesterId: number) => {
+    try {
+      await updateFriendRequest(requesterId,'rejected');
+      setUsers(prevUsers => prevUsers.map(user =>
+        user.id === requesterId ? { ...user, request_status: 'rejected' } : user
+      ));
+      toast.success('Request status updated');
+    } catch (error) {
+      toast.error('Error rejecting friend request');
+      console.error('Error rejecting friend request:', error);
+    }
+  };
+
+  const handleMessageClick = (userId: number) => {
+    navigate(`/dashboard/message/${userId}`);
+  };
+
   return (
     <div>
+            <ToastContainer />
       <h1>All Users</h1>
       <TableContainer component={Paper}>
         <Table>
@@ -52,7 +99,7 @@ const AllUsers: React.FC = () => {
             <TableRow>
               <TableCell>User Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Request</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -62,16 +109,45 @@ const AllUsers: React.FC = () => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   {user.request_status === 'none' && (
-                    <Button variant="contained" color="primary">Request</Button>
-                  )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleSendRequest(user.id)}
+                      sx={{ width: '80%' }}
+                    >
+                      Request
+                    </Button>)}
                   {user.request_status === 'pending' && (
-                    <Button variant="contained" color="warning">Pending</Button>
+                    <Button variant="contained" color="warning" sx={{ width: '80%' }}>Pending</Button>
+                  )}
+                  {user.request_status === 'sent' && (
+                    <Button variant="contained" color="warning" sx={{ width: '80%' }}>Request Sent</Button>
+                  )}
+                {user.request_status === 'received' && (
+                    <>
+                      <Button 
+                        variant="contained" 
+                        color="success" 
+                        onClick={() => handleApproveRequest(user.id)}
+                        sx={{ marginRight: '8px', width: '39%' }}
+                      >
+                        Accept
+                      </Button>
+                      <Button 
+                        variant="contained" 
+                        color="error" 
+                        onClick={() => handleRejectRequest(user.id)}
+                        sx={{ marginRight: '5px' , width: '39%'}}
+                      >
+                        Reject
+                      </Button>
+                    </>
                   )}
                   {user.request_status === 'rejected' && (
-                    <Button variant="contained" color="error">Rejected</Button>
+                    <Button variant="contained" color="error" sx={{ width: '80%' }}  >Rejected</Button>
                   )}
                   {user.request_status === 'accepted' && (
-                    <Button variant="contained" color="success">Message</Button>
+                    <Button variant="contained" color="success" sx={{ width: '80%' }} onClick={() => handleMessageClick(user.id)}>Message</Button>
                   )}
                 </TableCell>
               </TableRow>

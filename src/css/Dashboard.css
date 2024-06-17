@@ -1,5 +1,57 @@
 /* src/css/Dashboard.css */
 
+.nav {
+  width: 220px; /* Increased width for more space */
+  background: #f0f0f0;
+  padding: 20px; /* Increased padding for better spacing */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  height: 100%;
+  overflow-y: auto; /* Allow scrolling if content exceeds height */
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 200px; 
+}
+
+.nav li {
+  margin-bottom: 15px; /* Increased margin for better separation */
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  width: 200px; 
+  height: 40px;
+
+}
+
+.nav li:hover {
+  background-color: #e0e0e0; /* Highlight on hover */
+}
+
+.nav li svg {
+  margin-right: 15px;
+  margin-left: 5px;
+  width: 20px; /* Adjust icon size */
+}
+
+.nav li a {
+  text-decoration: none;
+  color: #333; /* Adjust text color */
+  font-weight: 500; /* Adjust font weight */
+  font-size: 16px; /* Adjust font size */
+  width: 200px; 
+
+}
+
+.nav li.active {
+  background-color: #25c1e8; /* Background color for active item */
+  font-weight: bold; /* Bold font for active item */
+}
+/* src/css/Dashboard.css */
+
 body, html {
   margin: 0;
   padding: 0;
@@ -100,12 +152,14 @@ body, html {
   object-fit: cover;
 }
 
-.dropdown-content {
-  position: absolute;
-  bottom: calc(100% + 10px); /* Adjust the value as needed */
-  right: 0;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1;
+
+.logout-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  margin-left: 10px; 
+}
+.logout-button:hover {
+  color: red; 
 }

@@ -18,14 +18,18 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
-    try {
-      let user = getUser();
-      if(!user){
-        navigate('/dashboard');
+    const checkUser = async () => {
+      try {
+        let user = await getUser();
+        if (user) {
+          navigate('/dashboard');
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
+    };
 
-    }
+    checkUser();
   }, [navigate]);
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
